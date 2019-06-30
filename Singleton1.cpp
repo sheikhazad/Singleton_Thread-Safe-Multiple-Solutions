@@ -14,7 +14,7 @@ private:
 
     static atomic<Singleton1*> _mInstance;
     static mutex               _mMutex;
-    //To check how many times Singleton2 constructor is called.
+    //To check how many times Singleton constructor is called.
     static int                 _mCount;
 
     Singleton1();
