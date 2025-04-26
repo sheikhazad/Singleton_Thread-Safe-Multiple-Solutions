@@ -4,38 +4,39 @@
 #include<atomic>
 
 using namespace std;
+//Assuming its hpp file
 class Singleton1
 {
 public:
 
-    static Singleton1*      getSingleton1Instance();
+    static Singleton1&      getSingleton1Instance();
 
+    //deleted functions should generally be public as it results in better error messages
+    //due to the compilers behavior to check accessibility before deleted status
+    //Singleton1(const Singleton1&) = delete; ==> If you want inline, no need to define in cpp file
+    //Singleton1& operator=(const Singleton1&) = delete; ==> If you want inline, no need to define in cpp file    
+    Singleton1(const Singleton1&);  
+    Singleton1& operator=(const Singleton1&);
+      
 private:
 
-    static atomic<Singleton1*> _mInstance;
-    static mutex               _mMutex;
     //To check how many times Singleton1 constructor is called.
     static int                 _mCount;
 
     Singleton1();
 };
 
-atomic<Singleton1*> Singleton1::_mInstance {nullptr};
-mutex Singleton1::_mMutex;
+//cpp file:
 int Singleton1::_mCount = 0;
 
-Singleton1* Singleton1::getSingleton1Instance()
+Singleton1::Singleton1(const Singleton1&) = delete; 
+Singleton1& Singleton1::operator=(const Singleton1&) = delete; 
+
+Singleton1& Singleton1::getSingleton1Instance()
 {
-    //Double checked locking mechanism is used for thread safety.
-    if(_mInstance == nullptr)
-    {
-        lock_guard<mutex>lg(_mMutex);
-        if(_mInstance == nullptr)
-        {
-           _mInstance = new Singleton1();
-        }
-    }
-    return _mInstance;
+    //No need for mutex or atomic as static is thread safe
+    static  Singleton1 instance;
+    return instance;
 }
 
 Singleton1::Singleton1()
@@ -55,7 +56,7 @@ void threadFunc()
 
 int main()
 {
-    cout<<"****** Thread-safe Singleton by using mutex and atomic ******" << endl;
+    cout<<"****** Thread-safe Singleton without using mutex and atomic ******" << endl;
 
     thread t(threadFunc);
 
