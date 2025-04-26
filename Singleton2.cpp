@@ -26,7 +26,7 @@ int            Singleton2::_mCount = 0;
 Singleton2* Singleton2::getSingleton2Instance()
 {
     //call_once() will be called only once irrespective of how many threads are running.
-   std::call_once(_mOnceFlag, [&]()->void {
+   std::call_once(_mOnceFlag, [&]() {
                    if(_mInstance == nullptr){
                        _mInstance = new Singleton2();
                     }
